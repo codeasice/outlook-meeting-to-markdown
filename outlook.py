@@ -1,5 +1,6 @@
-import win32com.client
+""" This script connects to Outlook and retrieves today's calendar events. """
 from datetime import datetime, timedelta
+import win32com.client
 
 # Connect to Outlook
 outlook = win32com.client.Dispatch("Outlook.Application")
@@ -44,9 +45,4 @@ for item in restricted_items:
         print("Attendees:")
         for attendee in attendees:
             print(f"  - \"{attendee}\"")
-        # print(f"Body: {body}")
         print("-" * 40)
-    else:
-        print("*" * 40)
-        print("*********Skipping non-appointment item:" + item.Subject)
-        print("*" * 40)
