@@ -1,4 +1,5 @@
 """ This script connects to Outlook and retrieves today's calendar events. """
+import re
 from datetime import datetime, timedelta
 import win32com.client
 from art import text2art
@@ -9,6 +10,15 @@ class OutlookMeetingToMarkDown:
         self.outlook = win32com.client.Dispatch("Outlook.Application")
         self.namespace = self.outlook.GetNamespace("MAPI")
         self.calendar_folder = self.namespace.GetDefaultFolder(9)
+
+    def sanitize_for_obsidian_link(self, note_title):
+        # Define a pattern for invalid characters
+        invalid_characters = r'[<>:"/\\|?*]'
+
+        # Replace invalid characters with '-'
+        sanitized_title = re.sub(invalid_characters, '-', note_title)
+
+        return sanitized_title
 
     def run(self, start_date, end_date):
         """ This method retrieves calendar events for a specified date range."""
@@ -37,9 +47,10 @@ class OutlookMeetingToMarkDown:
 
                 # Print the meeting details
                 formated_date = start.strftime("%Y-%m-%d")
-                subject = f"Subject: [[{formated_date} {subject}]]"
+                subject = f"[[{formated_date} {subject}]]"
+                subject = self.sanitize_for_obsidian_link(subject)
                 subjects.append(subject)
-                print(subject)
+                print(f"Subject: {subject}")
                 print(f"Start: {start}")
                 print(f"Location: {location}")
                 print("Attendees:")
